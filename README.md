@@ -21,10 +21,9 @@ junk entities.junk items.junk -o out/
 
 ## Format
 
-A `.junk` must contain either a sequence of values that's mapped into a JSON
-array _or_ a sequence of key-value definitions. Values and definitions must be
-newline-separated; commas are not permitted. See the list and object
-explanations below for more details.
+A `.junk` must contain either a sequence of values _or_ a sequence of key-value
+definitions. Values and definitions must be newline-separated; commas are not
+permitted. See the list and object explanations below for more details.
 
 Line comments start with `//`. Block comments are not supported.
 
