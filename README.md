@@ -130,6 +130,8 @@ need pretty-printing.
 Since the top level of a `.junk` file is always a sequence, the output is
 always a JSON array, even when the file contains only one value.
 
+_// FIXME allow top-level objects instead of lists_
+
 ## Building
 
 ```sh
