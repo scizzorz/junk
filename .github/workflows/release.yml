@@ -1,0 +1,70 @@
+name: "Release"
+
+on:
+  push:
+    tags:
+      - 'v.*'
+
+jobs:
+  build:
+    name: "Build ${{ matrix.artifact }}"
+    runs-on: "${{ matrix.os }}"
+    strategy:
+      matrix:
+        include:
+          - target: "aarch64-apple-darwin"
+            os: "macos-latest"
+            artifact: "junk-darwin-arm64"
+          - target: "x86_64-apple-darwin"
+            os: "macos-latest"
+            artifact: "junk-darwin-amd64"
+          - target: "x86_64-unknown-linux-gnu"
+            os: "ubuntu-latest"
+            artifact: "junk-linux-amd64"
+          - target: "aarch64-unknown-linux-gnu"
+            os: "ubuntu-latest"
+            artifact: "junk-linux-arm64"
+
+    steps:
+      - uses: "actions/checkout@v4"
+
+      - name: "Install Rust toolchain"
+        uses: "dtolnay/rust-toolchain@stable"
+        with:
+          targets: "${{ matrix.target }}"
+
+      - name: "Install aarch64 Linux cross-compiler"
+        if: "matrix.target == 'aarch64-unknown-linux-gnu'"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: "Build"
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: "aarch64-linux-gnu-gcc"
+        run: "cargo build --release --target ${{ matrix.target }}"
+
+      - name: "Stage binary"
+        run: "cp target/${{ matrix.target }}/release/junk ${{ matrix.artifact }}"
+
+      - uses: "actions/upload-artifact@v4"
+        with:
+          name: "${{ matrix.artifact }}"
+          path: "${{ matrix.artifact }}"
+
+  release:
+    name: "Create release"
+    needs: "build"
+    runs-on: "ubuntu-latest"
+    permissions:
+      contents: "write"
+    steps:
+      - uses: "actions/download-artifact@v4"
+
+      - uses: "softprops/action-gh-release@v2"
+        with:
+          files: |
+            junk-darwin-arm64/junk-darwin-arm64
+            junk-darwin-amd64/junk-darwin-amd64
+            junk-linux-arm64/junk-linux-arm64
+            junk-linux-amd64/junk-linux-amd64
