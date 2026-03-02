@@ -21,7 +21,10 @@ junk entities.junk items.junk -o out/
 
 ## Format
 
-A `.junk` file is a flat sequence of values that's mapped into a JSON array.
+A `.junk` must contain either a sequence of values that's mapped into a JSON
+array _or_ a sequence of key-value definitions. Values and definitions must be
+newline-separated; commas are not permitted. See the list and object
+explanations below for more details.
 
 Line comments start with `//`. Block comments are not supported.
 
@@ -110,16 +113,11 @@ So this input:
 produces:
 
 ```json
-{"id": "health-potion", "heal": 50, "consumable": true, "stackable": false, "tags": ["item", "consumable"]}
+[{"id": "health-potion", "heal": 50, "consumable": true, "stackable": false, "tags": ["item", "consumable"]}]
 ```
 
 Output is written as a single line with no pretty-printing. Use `jq` if you
 need pretty-printing.
-
-Since the top level of a `.junk` file is always a sequence, the output is
-always a JSON array, even when the file contains only one value.
-
-_// FIXME allow top-level objects instead of lists_
 
 ## Building
 

@@ -6,8 +6,9 @@ lead_digit = { '1'..'9' }
 digit = { '0'..'9' }
 punct = { "." | "-" | "_" }
 
-root = _{ SOI ~ main_body ~ EOI }
-main_body = { ("\n"* ~ value)* ~ "\n"* }
+root = _{ SOI ~ (root_object | root_list) ~ EOI }
+root_list = { ("\n"* ~ value)* ~ "\n"* }
+root_object = { "\n"* ~ def ~ ("\n"+ ~ def)* ~ "\n"* }
 body = _{ (body_comma | body_nl)? }
 body_comma = _{ def ~ ("," ~ def)* }
 body_nl = _{ "\n"+ ~ def ~ ("\n"+ ~ def)* ~ "\n"* }

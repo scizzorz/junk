@@ -4,7 +4,7 @@
 
 use clap::Parser as ClapParser;
 use pest::Parser;
-use pest::iterators::{Pair, Pairs};
+use pest::iterators::Pair;
 use pest_derive::Parser;
 use std::fmt;
 use std::fs;
@@ -122,11 +122,6 @@ impl fmt::Display for Def {
     }
 }
 
-/// Parses a top-level sequence of values into a [`Value::List`].
-fn parse_body(pairs: Pairs<Rule>) -> Value {
-    Value::List(pairs.map(Value::from).collect())
-}
-
 #[derive(ClapParser)]
 #[command(about = "Convert .junk files to JSON")]
 struct Cli {
@@ -156,7 +151,12 @@ fn main() -> ExitCode {
         let json = match JunkParser::parse(Rule::root, &contents) {
             Ok(mut root) => {
                 let body = root.next().unwrap();
-                parse_body(body.into_inner()).to_string()
+                let value = match body.as_rule() {
+                    Rule::root_list => Value::List(body.into_inner().map(Value::from).collect()),
+                    Rule::root_object => Value::Object(body.into_inner().map(Def::from).collect()),
+                    _ => unreachable!(),
+                };
+                value.to_string()
             }
             Err(err) => {
                 eprintln!("{}: {err}", path.display());
