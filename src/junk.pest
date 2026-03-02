@@ -1,0 +1,33 @@
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+COMMENT = _{ ("//") ~ (!"\n" ~ ANY)* }
+
+alpha = { 'a'..'z' | 'A'..'Z' }
+lead_digit = { '1'..'9' }
+digit = { '0'..'9' }
+punct = { "." | "-" | "_" }
+
+root = _{ SOI ~ main_body ~ EOI }
+main_body = { value* }
+body = _{ (def ~ ","?)* }
+
+def = _{ value_def | neg_flag_def | pos_flag_def }
+
+neg_flag_def = { "!" ~ id }
+pos_flag_def = { id }
+value_def = { id ~ ":" ~ value }
+
+id = @{ (alpha | digit | punct)+ }
+
+value = _{ list_value | object_value | literal_value }
+
+list_value = { "[" ~ (value ~ ","?)* ~ "]" }
+
+object_value = { "#" ~ id ~ "{" ~ body ~ "}" }
+
+literal_value = _{ bool_literal | int_literal | str_literal }
+
+bool_literal = { "true" | "false" }
+int_literal = @{ "-"? ~ ((lead_digit ~ digit+) | digit) }
+str_literal = { "\"" ~ inner_str ~ "\"" }
+
+inner_str = { (!"\"" ~ ANY)* }
