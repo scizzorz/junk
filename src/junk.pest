@@ -1,4 +1,4 @@
-WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+WHITESPACE = _{ " " | "\t" | "\r" }
 COMMENT = _{ ("//") ~ (!"\n" ~ ANY)* }
 
 alpha = { 'a'..'z' | 'A'..'Z' }
@@ -7,8 +7,10 @@ digit = { '0'..'9' }
 punct = { "." | "-" | "_" }
 
 root = _{ SOI ~ main_body ~ EOI }
-main_body = { value* }
-body = _{ (def ~ ","?)* }
+main_body = { ("\n"* ~ value)* ~ "\n"* }
+body = _{ (body_comma | body_nl)? }
+body_comma = _{ def ~ ("," ~ def)* }
+body_nl = _{ "\n"+ ~ def ~ ("\n"+ ~ def)* ~ "\n"* }
 
 def = _{ value_def | neg_flag_def | pos_flag_def }
 
@@ -20,7 +22,9 @@ id = @{ (alpha | digit | punct)+ }
 
 value = _{ list_value | object_value | literal_value }
 
-list_value = { "[" ~ (value ~ ","?)* ~ "]" }
+list_value = { "[" ~ (list_comma_body | list_nl_body)? ~ "]" }
+list_comma_body = _{ value ~ ("," ~ value)* }
+list_nl_body = _{ "\n"+ ~ value ~ ("\n"+ ~ value)* ~ "\n"* }
 
 object_value = { "#" ~ id ~ "{" ~ body ~ "}" }
 

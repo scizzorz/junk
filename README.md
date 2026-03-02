@@ -51,10 +51,8 @@ literal double-quote inside a string, you're out of luck.
 
 _// FIXME add more string support here_
 
-**Lists.** Wrap any number of values in `[...]`. Items are
-whitespace-separated; commas are optional.
-
-_// FIXME make items either newline-separated or comma-separated_
+**Lists.** Wrap any number of values in `[...]`. Items must be _either_
+newline-separated or comma-separated. Trailing commas are not allowed.
 
 ```
 [1, 2, 3]
@@ -67,7 +65,8 @@ _// FIXME make items either newline-separated or comma-separated_
 
 **Objects.** This is the main building block. An object is a `#name { ... }`
 expression: a hash sign, an identifier for the object's name, and a
-brace-delimited body of definitions.
+brace-delimited body of definitions. Definitons must be _either_
+newline-separated or comma-separated. Trailing commas are not allowed.
 
 ```
 #long-sword {
