@@ -51,7 +51,7 @@ literal double-quote inside a string, you're out of luck.
 
 _// FIXME add more string support here_
 
-**Lists.** Wrap any number of values in `[...]`. Items must be _either_
+**Lists.** A sequence of values wrapped in `[...]`. Items must be _either_
 newline-separated or comma-separated. Trailing commas are not allowed.
 
 ```
@@ -63,10 +63,15 @@ newline-separated or comma-separated. Trailing commas are not allowed.
 ]
 ```
 
-**Objects.** This is the main building block. An object is a `#name { ... }`
-expression: a hash sign, an identifier for the object's name, and a
-brace-delimited body of definitions. Definitons must be _either_
-newline-separated or comma-separated. Trailing commas are not allowed.
+**Objects.** A sequence of key-value definitions wrapped in `{...}`. Definitons
+must be _either_ newline-separated or comma-separated. Trailing commas are not
+allowed.
+
+Definitions may be a `key: value` pair or a boolean shorthand of `key` or
+`!key`. Keys are alphanumeric and may contain periods, hyphens, or underscores.
+
+An optional `#id` may be given before the opening brace; this is added as the
+`"id"` key in the JSON output.
 
 ```
 #long-sword {
@@ -76,22 +81,6 @@ newline-separated or comma-separated. Trailing commas are not allowed.
     !stackable
 }
 ```
-
-The name becomes an `"id"` key in the JSON output, always inserted first.
-
-_// FIXME allow anonymous objects_
-
-### Object bodies
-
-The body of an object holds definitions, optionally separated by commas. There are three forms:
-
-| Syntax | Meaning |
-|---|---|
-| `key: value` | assign any value to `key` |
-| `key` | shorthand for `key: true` |
-| `!key` | shorthand for `key: false` |
-
-Keys are alphanumeric with periods, hyphens, and underscores.
 
 ## JSON mapping
 

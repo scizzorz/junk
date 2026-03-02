@@ -41,12 +41,15 @@ impl<'i> From<Pair<'i, Rule>> for Value {
             Rule::str_literal => Value::Str(pair.into_inner().as_str().to_string()),
             Rule::list_value => Value::List(pair.into_inner().map(Value::from).collect()),
             Rule::object_value => {
-                let mut pairs = pair.into_inner();
-                let id = pairs.next().unwrap().as_str().to_string();
-                let mut defs = vec![Def {
-                    key: "id".to_string(),
-                    value: Value::Str(id),
-                }];
+                let mut pairs = pair.into_inner().peekable();
+                let mut defs = vec![];
+                if pairs.peek().map(|p| p.as_rule()) == Some(Rule::id) {
+                    let id = pairs.next().unwrap().as_str().to_string();
+                    defs.push(Def {
+                        key: "id".to_string(),
+                        value: Value::Str(id),
+                    });
+                }
                 defs.extend(pairs.map(Def::from));
                 Value::Object(defs)
             }
