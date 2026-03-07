@@ -14,6 +14,10 @@ build:
 run:
   cargo run
 
+# Run project tests
+test:
+  cargo test
+
 # Format the code
 format:
   cargo fmt
