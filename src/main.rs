@@ -23,6 +23,8 @@ enum Value {
     Object(Vec<Def>),
     /// A signed 64-bit integer.
     Int(i64),
+    /// A 64-bit floating-point number.
+    Float(f64),
     /// A boolean.
     Bool(bool),
     /// A string literal.
@@ -37,6 +39,7 @@ impl<'i> From<Pair<'i, Rule>> for Value {
                 "false" => Value::Bool(false),
                 _ => unreachable!(),
             },
+            Rule::float_literal => Value::Float(pair.as_str().parse().unwrap()),
             Rule::int_literal => Value::Int(pair.as_str().parse().unwrap()),
             Rule::str_literal => Value::Str(pair.into_inner().as_str().to_string()),
             Rule::list_value => Value::List(pair.into_inner().map(Value::from).collect()),
@@ -70,6 +73,7 @@ impl fmt::Display for Value {
                 write!(f, "{{{}}}", items.join(", "))
             }
             Value::Int(val) => write!(f, "{val}"),
+            Value::Float(val) => write!(f, "{val}"),
             Value::Bool(val) => write!(f, "{val}"),
             Value::Str(val) => write!(f, "\"{val}\""),
         }

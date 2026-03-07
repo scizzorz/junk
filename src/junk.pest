@@ -29,9 +29,10 @@ list_nl_body = _{ "\n"+ ~ value ~ ("\n"+ ~ value)* ~ "\n"* }
 
 object_value = { ("#" ~ id)? ~ "{" ~ body ~ "}" }
 
-literal_value = _{ bool_literal | int_literal | str_literal }
+literal_value = _{ bool_literal | float_literal | int_literal | str_literal }
 
 bool_literal = { "true" | "false" }
+float_literal = @{ "-"? ~ ((lead_digit ~ digit+) | digit) ~ "." ~ digit+ }
 int_literal = @{ "-"? ~ ((lead_digit ~ digit+) | digit) }
 str_literal = { "\"" ~ inner_str ~ "\"" }
 

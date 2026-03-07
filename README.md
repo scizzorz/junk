@@ -31,20 +31,21 @@ _// FIXME add block comments_
 
 ### Values
 
-**Literals.** The primitive types are booleans, integers, and strings.
-
-_// FIXME add float support_
+**Literals.** The primitive types are booleans, integers, floats, and strings.
 
 ```
 true
 false
 42
 -7
+3.14
+-0.5
 "hello world"
 ```
 
-Integers follow standard rules: a leading minus sign is allowed, and leading
-zeros are not (so `07` is invalid).
+Integers and floats follow standard rules: a leading minus sign is allowed, and
+leading zeros are not (so `07` is invalid). Floats require digits on both sides
+of the decimal point (so `1.` and `.5` are invalid).
 
 _// FIXME add other formatting options for hex and binary literals_
 
@@ -92,6 +93,7 @@ Each construct maps to a JSON equivalent:
 |---|---|
 | `true` / `false` | boolean |
 | `42`, `-7` | number |
+| `3.14`, `-0.5` | number |
 | `"text"` | string |
 | `[a, b, c]` | array |
 | `#name { ... }` | object with `"id"` as the first key |
