@@ -41,7 +41,7 @@ impl<'i> From<Pair<'i, Rule>> for Value {
             },
             Rule::float_literal => Value::Float(pair.as_str().parse().unwrap()),
             Rule::int_literal => Value::Int(pair.as_str().parse().unwrap()),
-            Rule::str_literal => Value::Str(pair.into_inner().as_str().to_string()),
+            Rule::str_literal => Value::Str(unescape(pair.into_inner().as_str())),
             Rule::list_value => Value::List(pair.into_inner().map(Value::from).collect()),
             Rule::object_value => {
                 let mut pairs = pair.into_inner().peekable();
@@ -75,7 +75,20 @@ impl fmt::Display for Value {
             Value::Int(val) => write!(f, "{val}"),
             Value::Float(val) => write!(f, "{val}"),
             Value::Bool(val) => write!(f, "{val}"),
-            Value::Str(val) => write!(f, "\"{val}\""),
+            Value::Str(val) => {
+                write!(f, "\"")?;
+                for c in val.chars() {
+                    match c {
+                        '"' => write!(f, "\\\"")?,
+                        '\\' => write!(f, "\\\\")?,
+                        '\n' => write!(f, "\\n")?,
+                        '\r' => write!(f, "\\r")?,
+                        '\t' => write!(f, "\\t")?,
+                        c => write!(f, "{c}")?,
+                    }
+                }
+                write!(f, "\"")
+            }
         }
     }
 }
@@ -136,6 +149,26 @@ struct Cli {
     /// Output directory for generated .json files
     #[arg(short, long, default_value = ".")]
     output: PathBuf,
+}
+
+fn unescape(s: &str) -> String {
+    let mut result = String::with_capacity(s.len());
+    let mut chars = s.chars();
+    while let Some(c) = chars.next() {
+        if c == '\\' {
+            match chars.next() {
+                Some('"') => result.push('"'),
+                Some('n') => result.push('\n'),
+                Some('r') => result.push('\r'),
+                Some('t') => result.push('\t'),
+                Some('\\') => result.push('\\'),
+                _ => unreachable!("invalid escape — grammar should have rejected this"),
+            }
+        } else {
+            result.push(c);
+        }
+    }
+    result
 }
 
 fn main() -> ExitCode {
